@@ -9,7 +9,6 @@
 
   <title>Halloween in Amstelveen 🎃</title>
 
-  <!-- MapLibre -->
   <link
     href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css"
     rel="stylesheet"
@@ -34,11 +33,6 @@
       overflow: hidden;
     }
 
-
-    /* =========================
-       HEADER
-       ========================= */
-
     #header {
 
       position: absolute;
@@ -62,7 +56,6 @@
 
     }
 
-
     #title {
 
       font-size: 22px;
@@ -73,7 +66,6 @@
 
     }
 
-
     #description {
 
       font-size: 15px;
@@ -81,7 +73,6 @@
       line-height: 1.4;
 
     }
-
 
     #legend {
 
@@ -91,11 +82,6 @@
 
     }
 
-
-    /* =========================
-       MAP
-       ========================= */
-
     #map {
 
       width: 100%;
@@ -104,22 +90,25 @@
 
     }
 
-
-    /* =========================
-       HOUSE COUNT
-       ========================= */
-
-    #house-count {
+    #controls {
 
       position: absolute;
 
       bottom: 20px;
 
-      left: 50%;
-
-      transform: translateX(-50%);
+      right: 15px;
 
       z-index: 1000;
+
+      display: flex;
+
+      gap: 8px;
+
+      align-items: center;
+
+    }
+
+    #house-count {
 
       background: rgba(255, 255, 255, 0.95);
 
@@ -138,10 +127,30 @@
 
     }
 
+    #refresh-button {
 
-    /* =========================
-       PUMPKINS
-       ========================= */
+      border: none;
+
+      background: rgba(255, 255, 255, 0.95);
+
+      padding: 9px 13px;
+
+      border-radius: 20px;
+
+      font-size: 16px;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.2);
+
+    }
+
+    #refresh-button:active {
+
+      transform: scale(0.96);
+
+    }
 
     .pumpkin-marker {
 
@@ -156,11 +165,6 @@
       user-select: none;
 
     }
-
-
-    /* =========================
-       LOADING
-       ========================= */
 
     #loading {
 
@@ -187,11 +191,6 @@
 
     }
 
-
-    /* =========================
-       MOBILE
-       ========================= */
-
     @media (max-width: 600px) {
 
       #header {
@@ -206,13 +205,11 @@
 
       }
 
-
       #title {
 
         font-size: 19px;
 
       }
-
 
       #description {
 
@@ -220,17 +217,33 @@
 
       }
 
-
       #legend {
 
         font-size: 13px;
 
       }
 
-
       .pumpkin-marker {
 
         font-size: 27px;
+
+      }
+
+      #controls {
+
+        bottom: 15px;
+
+        left: 10px;
+
+        right: 10px;
+
+        justify-content: center;
+
+      }
+
+      #house-count {
+
+        font-size: 13px;
 
       }
 
@@ -240,13 +253,7 @@
 
 </head>
 
-
 <body>
-
-
-  <!-- =========================
-       HEADER
-       ========================= -->
 
   <div id="header">
 
@@ -269,53 +276,36 @@
 
   </div>
 
-
-  <!-- =========================
-       MAP
-       ========================= -->
-
   <div id="map"></div>
 
+  <div id="controls">
 
-  <!-- =========================
-       HOUSE COUNT
-       ========================= -->
+    <div id="house-count">
+      🎃 Loading participating houses...
+    </div>
 
-  <div id="house-count">
-    🎃 Loading participating houses...
+    <button
+      id="refresh-button"
+      title="Refresh map"
+      aria-label="Refresh map"
+    >
+      🔄
+    </button>
+
   </div>
-
-
-  <!-- =========================
-       LOADING
-       ========================= -->
 
   <div id="loading">
     Loading Halloween map...
   </div>
 
-
-  <!-- MapLibre -->
-
   <script
     src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js">
   </script>
 
-
   <script>
-
-
-    // =====================================================
-    // GOOGLE APPS SCRIPT URL
-    // =====================================================
 
     const DATA_URL =
       "https://script.google.com/macros/s/AKfycbyguU3sKAasRiMgqf6aoVuQSSW6LTrjlNBdDhFSYiSC5cSB-tyoyh1q6qP5QTDcFD-d2w/exec";
-
-
-    // =====================================================
-    // CREATE MAP
-    // =====================================================
 
     const map =
       new maplibregl.Map({
@@ -326,25 +316,15 @@
           "https://tiles.openfreemap.org/styles/liberty",
 
         center: [
-          4.90,
-          52.30
+          4.872,
+          52.305
         ],
 
-        zoom: 12
+        zoom: 13
 
       });
 
-
-    // =====================================================
-    // PUMPKIN MARKERS
-    // =====================================================
-
     let pumpkinMarkers = [];
-
-
-    // =====================================================
-    // LOAD HOUSES
-    // =====================================================
 
     async function loadHouses() {
 
@@ -355,7 +335,6 @@
             DATA_URL + "?t=" + Date.now()
           );
 
-
         if (!response.ok) {
 
           throw new Error(
@@ -365,32 +344,19 @@
 
         }
 
-
         const houses =
           await response.json();
-
 
         console.log(
           "Houses received:",
           houses
         );
 
-
-        // ---------------------------------------------
-        // REMOVE OLD MARKERS
-        // ---------------------------------------------
-
         pumpkinMarkers.forEach(
           marker => marker.remove()
         );
 
-
         pumpkinMarkers = [];
-
-
-        // ---------------------------------------------
-        // ADD NEW MARKERS
-        // ---------------------------------------------
 
         houses.forEach(
           house => {
@@ -400,14 +366,11 @@
                 "div"
               );
 
-
             element.className =
               "pumpkin-marker";
 
-
             element.textContent =
               "🎃";
-
 
             const marker =
               new maplibregl.Marker({
@@ -421,7 +384,6 @@
 
               .addTo(map);
 
-
             pumpkinMarkers.push(
               marker
             );
@@ -429,14 +391,8 @@
           }
         );
 
-
-        // ---------------------------------------------
-        // UPDATE COUNT
-        // ---------------------------------------------
-
         const count =
           houses.length;
-
 
         document
           .getElementById(
@@ -453,11 +409,6 @@
             ) +
             " participating";
 
-
-        // ---------------------------------------------
-        // HIDE LOADING
-        // ---------------------------------------------
-
         document
           .getElementById(
             "loading"
@@ -465,41 +416,7 @@
           .style.display =
             "none";
 
-
-        // ---------------------------------------------
-        // FIT MAP TO HOUSES
-        // ---------------------------------------------
-
-        if (houses.length > 0) {
-
-          const bounds =
-            new maplibregl.LngLatBounds();
-
-
-          houses.forEach(
-            house => {
-
-              bounds.extend([
-                Number(house.lng),
-                Number(house.lat)
-              ]);
-
-            }
-          );
-
-
-          map.fitBounds(
-            bounds,
-            {
-              padding: 100,
-              maxZoom: 16
-            }
-          );
-
-        }
-
       }
-
 
       catch (error) {
 
@@ -508,14 +425,12 @@
           error
         );
 
-
         document
           .getElementById(
             "loading"
           )
           .textContent =
             "Unable to load the Halloween map.";
-
 
         document
           .getElementById(
@@ -528,29 +443,34 @@
 
     }
 
-
-    // =====================================================
-    // INITIAL LOAD
-    // =====================================================
-
     map.on(
       "load",
       loadHouses
     );
 
-
-    // =====================================================
-    // AUTOMATIC REFRESH
-    // =====================================================
+    /*
+      Automatically refresh every 5 minutes.
+    */
 
     setInterval(
       loadHouses,
-      60000
+      5 * 60 * 1000
     );
 
+    /*
+      Manual refresh button.
+    */
+
+    document
+      .getElementById(
+        "refresh-button"
+      )
+      .addEventListener(
+        "click",
+        loadHouses
+      );
 
   </script>
-
 
 </body>
 
