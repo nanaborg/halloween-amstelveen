@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Halloween Amstelveen – Manage House</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 20px;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+      background: #111;
+      color: #fff;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 480px;
+
+      background: #1c1c1c;
+
+      border-radius: 20px;
+
+      padding: 32px 24px;
+
+      text-align: center;
+
+      box-shadow:
+        0 10px 40px rgba(0,0,0,0.35);
+    }
+
+    .pumpkin {
+      font-size: 64px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+
+      font-size: 28px;
+    }
+
+    p {
+      margin: 0 auto 28px;
+
+      max-width: 390px;
+
+      font-size: 17px;
+      line-height: 1.5;
+
+      color: #ddd;
+    }
+
+    .button {
+      display: block;
+
+      width: 100%;
+
+      margin: 12px 0;
+
+      padding: 16px 20px;
+
+      border-radius: 12px;
+
+      text-decoration: none;
+
+      font-size: 17px;
+      font-weight: 600;
+
+      cursor: pointer;
+
+      transition:
+        transform 0.1s ease,
+        opacity 0.1s ease;
+    }
+
+    .button:active {
+      transform: scale(0.98);
+    }
+
+    .on {
+      background: #f28c28;
+      color: #111;
+    }
+
+    .off {
+      background: #333;
+      color: #fff;
+
+      border: 1px solid #555;
+    }
+
+    .note {
+      margin-top: 24px;
+
+      font-size: 13px;
+
+      line-height: 1.4;
+
+      color: #999;
+    }
+
+    .error {
+      color: #ff7777;
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+  <div class="card">
+
+    <div class="pumpkin">
+      🎃
+    </div>
+
+    <h1>
+      Manage your Halloween house
+    </h1>
+
+    <p>
+      Use the buttons below to control whether
+      your house appears on the Halloween
+      trick-or-treat map.
+    </p>
+
+
+    <div id="buttons">
+
+      <a
+        id="onButton"
+        class="button on"
+        href="#"
+      >
+        🎃 Keep my house on the map
+      </a>
+
+
+      <a
+        id="offButton"
+        class="button off"
+        href="#"
+      >
+        🏠 Remove my house from the map
+      </a>
+
+    </div>
+
+
+    <div
+      id="error"
+      class="note error"
+      style="display:none;"
+    >
+      This management link appears to be invalid.
+    </div>
+
+
+    <div class="note">
+
+      Your private management link is unique to
+      your household. Please don't share it.
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    const API =
+      "https://script.google.com/macros/s/" +
+      "AKfycbyguU3sKAasRiMgqf6aoVuQSSW6LTrjlNBdDhFSYiSC5cSB-tyoyh1q6qP5QTDcFD-d2w" +
+      "/exec";
+
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const token =
+      params.get("t");
+
+
+    const onButton =
+      document.getElementById("onButton");
+
+
+    const offButton =
+      document.getElementById("offButton");
+
+
+    const error =
+      document.getElementById("error");
+
+
+    if (!token) {
+
+      onButton.style.display = "none";
+      offButton.style.display = "none";
+
+      error.style.display = "block";
+
+    } else {
+
+      onButton.href =
+        API +
+        "?token=" +
+        encodeURIComponent(token) +
+        "&action=on";
+
+
+      offButton.href =
+        API +
+        "?token=" +
+        encodeURIComponent(token) +
+        "&action=off";
+
+    }
+
+  </script>
+
+</body>
+</html>
