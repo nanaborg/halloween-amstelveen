@@ -5,7 +5,10 @@
 
   <meta charset="UTF-8">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Halloween in Amstelveen 🎃</title>
 
@@ -298,14 +301,69 @@
     Loading Halloween map...
   </div>
 
+
+  <!-- MapLibre -->
+
   <script
     src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js">
   </script>
 
-  <script>
 
-    const DATA_URL =
-      "https://script.google.com/macros/s/AKfycbyguU3sKAasRiMgqf6aoVuQSSW6LTrjlNBdDhFSYiSC5cSB-tyoyh1q6qP5QTDcFD-d2w/exec";
+  <!-- Firebase -->
+
+  <script type="module">
+
+    import {
+      initializeApp
+    } from
+      "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+    import {
+      getDatabase,
+      ref,
+      onValue
+    } from
+      "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+
+    /* FIREBASE CONFIG */
+
+    const firebaseConfig = {
+
+      apiKey:
+        "AIzaSyDaLyYyzeitjf0qg8R-cDmsoc-D2A7YYKv8",
+
+      authDomain:
+        "halloween-in-amstelveen.firebaseapp.com",
+
+      databaseURL:
+        "https://halloween-in-amstelveen-default-rtdb.europe-west1.firebasedatabase.app",
+
+      projectId:
+        "halloween-in-amstelveen",
+
+      storageBucket:
+        "halloween-in-amstelveen.firebasestorage.app",
+
+      messagingSenderId:
+        "270982267790",
+
+      appId:
+        "1:270982267790:web:32aa17b0bff91567e31adf"
+
+    };
+
+
+    /* INITIALISE FIREBASE */
+
+    const firebaseApp =
+      initializeApp(firebaseConfig);
+
+    const database =
+      getDatabase(firebaseApp);
+
+
+    /* MAP */
 
     const map =
       new maplibregl.Map({
@@ -324,142 +382,233 @@
 
       });
 
+
     let pumpkinMarkers = [];
 
-    async function loadHouses() {
 
-      try {
+    /* DISPLAY HOUSES */
 
-        const response =
-          await fetch(
-            DATA_URL + "?t=" + Date.now()
-          );
+    function displayHouses(data) {
 
-        if (!response.ok) {
+      /*
+       * Remove existing markers.
+       */
 
-          throw new Error(
-            "HTTP error " +
-            response.status
-          );
+      pumpkinMarkers.forEach(
+        marker => marker.remove()
+      );
 
-        }
+      pumpkinMarkers = [];
 
-        const houses =
-          await response.json();
 
-        console.log(
-          "Houses received:",
-          houses
-        );
+      /*
+       * Firebase returns an object:
+       *
+       * {
+       *   houseID: {
+       *     lat: ...,
+       *     lng: ...,
+       *     active: true
+       *   }
+       * }
+       */
 
-        pumpkinMarkers.forEach(
-          marker => marker.remove()
-        );
+      const houses = [];
 
-        pumpkinMarkers = [];
 
-        houses.forEach(
-          house => {
+      if (data) {
 
-            const element =
-              document.createElement(
-                "div"
-              );
+        Object.keys(data).forEach(
+          function(id) {
 
-            element.className =
-              "pumpkin-marker";
+            const house =
+              data[id];
 
-            element.textContent =
-              "🎃";
+            if (!house) {
+              return;
+            }
 
-            const marker =
-              new maplibregl.Marker({
-                element: element
-              })
+            const active =
+              house.active === true ||
+              String(house.active)
+                .toLowerCase() === "true";
 
-              .setLngLat([
-                Number(house.lng),
-                Number(house.lat)
-              ])
+            if (!active) {
+              return;
+            }
 
-              .addTo(map);
+            const lat =
+              Number(house.lat);
 
-            pumpkinMarkers.push(
-              marker
-            );
+            const lng =
+              Number(house.lng);
+
+            if (
+              !isFinite(lat) ||
+              !isFinite(lng)
+            ) {
+              return;
+            }
+
+            houses.push({
+              lat: lat,
+              lng: lng
+            });
 
           }
         );
 
-        const count =
-          houses.length;
-
-        document
-          .getElementById(
-            "house-count"
-          )
-          .textContent =
-            "🎃 " +
-            count +
-            " " +
-            (
-              count === 1
-                ? "house"
-                : "houses"
-            ) +
-            " participating";
-
-        document
-          .getElementById(
-            "loading"
-          )
-          .style.display =
-            "none";
-
       }
 
-      catch (error) {
 
-        console.error(
-          "Halloween map error:",
-          error
-        );
+      /*
+       * Add pumpkin markers.
+       */
 
-        document
-          .getElementById(
-            "loading"
-          )
-          .textContent =
-            "Unable to load the Halloween map.";
+      houses.forEach(
+        function(house) {
 
-        document
-          .getElementById(
-            "house-count"
-          )
-          .textContent =
-            "🎃 Map temporarily unavailable";
+          const element =
+            document.createElement(
+              "div"
+            );
 
-      }
+          element.className =
+            "pumpkin-marker";
+
+          element.textContent =
+            "🎃";
+
+          const marker =
+            new maplibregl.Marker({
+              element: element
+            })
+              .setLngLat([
+                house.lng,
+                house.lat
+              ])
+              .addTo(map);
+
+          pumpkinMarkers.push(
+            marker
+          );
+
+        }
+      );
+
+
+      /*
+       * Update house count.
+       */
+
+      const count =
+        houses.length;
+
+      document
+        .getElementById(
+          "house-count"
+        )
+        .textContent =
+          "🎃 " +
+          count +
+          " " +
+          (
+            count === 1
+              ? "house"
+              : "houses"
+          ) +
+          " participating";
+
+
+      /*
+       * Hide loading message.
+       */
+
+      document
+        .getElementById(
+          "loading"
+        )
+        .style.display =
+          "none";
 
     }
 
+
+    /* FIREBASE LIVE LISTENER */
+
+    function startFirebaseListener() {
+
+      const housesRef =
+        ref(
+          database,
+          "houses"
+        );
+
+
+      onValue(
+
+        housesRef,
+
+        function(snapshot) {
+
+          console.log(
+            "Firebase map data updated."
+          );
+
+          displayHouses(
+            snapshot.val()
+          );
+
+        },
+
+        function(error) {
+
+          console.error(
+            "Firebase map error:",
+            error
+          );
+
+          document
+            .getElementById(
+              "loading"
+            )
+            .textContent =
+              "Unable to load the Halloween map.";
+
+          document
+            .getElementById(
+              "house-count"
+            )
+            .textContent =
+              "🎃 Map temporarily unavailable";
+
+        }
+
+      );
+
+    }
+
+
+    /*
+     * Start Firebase after the map loads.
+     */
+
     map.on(
       "load",
-      loadHouses
+      function() {
+
+        startFirebaseListener();
+
+      }
     );
 
-    /*
-      Automatically refresh every 5 minutes.
-    */
-
-    setInterval(
-      loadHouses,
-      5 * 60 * 1000
-    );
 
     /*
-      Manual refresh button.
-    */
+     * Manual refresh.
+     *
+     * Firebase normally updates automatically,
+     * so this is only here as a backup.
+     */
 
     document
       .getElementById(
@@ -467,8 +616,13 @@
       )
       .addEventListener(
         "click",
-        loadHouses
+        function() {
+
+          window.location.reload();
+
+        }
       );
+
 
   </script>
 
