@@ -33,12 +33,142 @@
       overflow: hidden;
     }
 
+    /* PASSWORD SCREEN */
+
+    #password-screen {
+
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 5000;
+
+      background:
+        linear-gradient(
+          rgba(20, 15, 30, 0.94),
+          rgba(10, 10, 15, 0.97)
+        );
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 20px;
+
+    }
+
+    #password-box {
+
+      width: 100%;
+
+      max-width: 360px;
+
+      background: white;
+
+      border-radius: 16px;
+
+      padding: 28px 24px;
+
+      text-align: center;
+
+      box-shadow:
+        0 5px 25px rgba(0, 0, 0, 0.35);
+
+    }
+
+    #password-box h1 {
+
+      margin: 0 0 10px;
+
+      font-size: 25px;
+
+    }
+
+    #password-box p {
+
+      margin: 0 0 18px;
+
+      font-size: 14px;
+
+      line-height: 1.4;
+
+    }
+
+    #password-input {
+
+      width: 100%;
+
+      padding: 12px;
+
+      border: 1px solid #ccc;
+
+      border-radius: 8px;
+
+      font-size: 16px;
+
+      text-align: center;
+
+      margin-bottom: 10px;
+
+    }
+
+    #password-button {
+
+      width: 100%;
+
+      padding: 12px;
+
+      border: 0;
+
+      border-radius: 8px;
+
+      background: #222;
+
+      color: white;
+
+      font-size: 16px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+    }
+
+    #password-error {
+
+      display: none;
+
+      margin-top: 10px;
+
+      color: #b00020;
+
+      font-size: 14px;
+
+    }
+
+
+    /* MAIN MAP */
+
+    #app {
+
+      display: none;
+
+      width: 100%;
+
+      height: 100%;
+
+    }
+
     #header {
 
       position: absolute;
 
       top: 15px;
+
       left: 15px;
+
       right: 15px;
 
       z-index: 1000;
@@ -98,6 +228,8 @@
 
       right: 15px;
 
+      left: 15px;
+
       z-index: 1000;
 
       display: flex;
@@ -105,6 +237,39 @@
       gap: 8px;
 
       align-items: center;
+
+      justify-content: flex-end;
+
+    }
+
+    #location-button {
+
+      background: rgba(255, 255, 255, 0.95);
+
+      padding: 9px 14px;
+
+      border: 0;
+
+      border-radius: 20px;
+
+      font-size: 14px;
+
+      font-weight: bold;
+
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.2);
+
+      cursor: pointer;
+
+      white-space: nowrap;
+
+    }
+
+    #location-button:disabled {
+
+      opacity: 0.65;
+
+      cursor: default;
 
     }
 
@@ -138,6 +303,23 @@
       cursor: default;
 
       user-select: none;
+
+    }
+
+    .user-location-marker {
+
+      width: 18px;
+
+      height: 18px;
+
+      border-radius: 50%;
+
+      background: #4285f4;
+
+      border: 3px solid white;
+
+      box-shadow:
+        0 1px 6px rgba(0, 0, 0, 0.45);
 
     }
 
@@ -243,9 +425,17 @@
 
         justify-content: center;
 
+        flex-wrap: wrap;
+
       }
 
       #house-count {
+
+        font-size: 13px;
+
+      }
+
+      #location-button {
 
         font-size: 13px;
 
@@ -259,43 +449,93 @@
 
 <body>
 
-  <div id="header">
 
-    <div id="title">
-      🎃 Halloween in Amstelveen
-    </div>
+  <!-- PASSWORD SCREEN -->
 
-    <div id="description">
+  <div id="password-screen">
 
-      Town-wide trick-or-treat on
-      <strong>October 31st from 17:00 to 20:00</strong>.
+    <div id="password-box">
 
-    </div>
+      <h1>🎃 Halloween Map</h1>
 
-    <div id="legend">
+      <p>
+        The map is currently available to registered
+        participants.
+      </p>
 
-      🎃 = house welcoming trick-or-treaters
+      <input
+        id="password-input"
+        type="password"
+        placeholder="Enter password"
+        autocomplete="off"
+      >
+
+      <button
+        id="password-button"
+        type="button"
+      >
+        OPEN MAP
+      </button>
+
+      <div id="password-error">
+        That's not the right password.
+      </div>
 
     </div>
 
   </div>
 
-  <div id="map"></div>
 
-  <div id="controls">
+  <!-- MAIN APP -->
 
-    <div id="house-count">
-      🎃 Loading participating houses...
+  <div id="app">
+
+    <div id="header">
+
+      <div id="title">
+        🎃 Halloween in Amstelveen
+      </div>
+
+      <div id="description">
+
+        Town-wide trick-or-treat on
+        <strong>October 31st from 17:00 to 20:00</strong>.
+
+      </div>
+
+      <div id="legend">
+
+        🎃 = house welcoming trick-or-treaters
+
+      </div>
+
     </div>
 
-  </div>
+    <div id="map"></div>
 
-  <div id="loading">
-    Loading Halloween map...
-  </div>
+    <div id="controls">
 
-  <div id="error">
-    Unable to load the Halloween map.
+      <button
+        id="location-button"
+        type="button"
+      >
+        📍 My location
+      </button>
+
+      <div id="house-count">
+        🎃 Loading participating houses...
+      </div>
+
+    </div>
+
+    <div id="loading">
+      Loading Halloween map...
+    </div>
+
+    <div id="error">
+      Unable to load the Halloween map.
+    </div>
+
   </div>
 
 
@@ -319,7 +559,121 @@
 
   <script>
 
-    /* FIREBASE CONFIG */
+    /* ========================================================
+       PASSWORD
+       ======================================================== */
+
+    const MAP_PASSWORD =
+      "PumpkinWalk26";
+
+    /*
+     * Password protection ends on 31 October 2026.
+     * From that date onward the map opens normally.
+     */
+
+    const PASSWORD_END =
+      new Date("2026-10-31T00:00:00+02:00");
+
+
+    function passwordIsRequired() {
+
+      return new Date() < PASSWORD_END;
+
+    }
+
+
+    function openMap() {
+
+      document
+        .getElementById("password-screen")
+        .style.display = "none";
+
+      document
+        .getElementById("app")
+        .style.display = "block";
+
+      initialiseMap();
+
+    }
+
+
+    function checkPassword() {
+
+      const input =
+        document
+          .getElementById("password-input")
+          .value;
+
+      const error =
+        document
+          .getElementById("password-error");
+
+
+      if (input === MAP_PASSWORD) {
+
+        sessionStorage.setItem(
+          "halloweenMapAccess",
+          "yes"
+        );
+
+        error.style.display = "none";
+
+        openMap();
+
+      } else {
+
+        error.style.display = "block";
+
+      }
+
+    }
+
+
+    document
+      .getElementById("password-button")
+      .addEventListener(
+        "click",
+        checkPassword
+      );
+
+
+    document
+      .getElementById("password-input")
+      .addEventListener(
+        "keydown",
+        function(event) {
+
+          if (event.key === "Enter") {
+            checkPassword();
+          }
+
+        }
+      );
+
+
+    /*
+     * If password protection has expired,
+     * open automatically.
+     *
+     * If the user already entered the password
+     * during this browser session, don't ask again.
+     */
+
+    if (
+      !passwordIsRequired() ||
+      sessionStorage.getItem(
+        "halloweenMapAccess"
+      ) === "yes"
+    ) {
+
+      openMap();
+
+    }
+
+
+    /* ========================================================
+       FIREBASE CONFIG
+       ======================================================== */
 
     const firebaseConfig = {
 
@@ -347,7 +701,9 @@
     };
 
 
-    /* INITIALISE FIREBASE */
+    /* ========================================================
+       FIREBASE
+       ======================================================== */
 
     firebase.initializeApp(
       firebaseConfig
@@ -357,30 +713,61 @@
       firebase.database();
 
 
-    /* MAP */
+    /* ========================================================
+       MAP
+       ======================================================== */
 
-    const map =
-      new maplibregl.Map({
+    let map = null;
 
-        container: "map",
-
-        style:
-          "https://tiles.openfreemap.org/styles/liberty",
-
-        center: [
-          4.872,
-          52.305
-        ],
-
-        zoom: 13
-
-      });
-
+    let mapStarted = false;
 
     let pumpkinMarkers = [];
 
+    let userLocationMarker = null;
 
-    /* UPDATE MAP */
+
+    function initialiseMap() {
+
+      if (mapStarted) {
+        return;
+      }
+
+      mapStarted = true;
+
+
+      map =
+        new maplibregl.Map({
+
+          container: "map",
+
+          style:
+            "https://tiles.openfreemap.org/styles/liberty",
+
+          center: [
+            4.872,
+            52.305
+          ],
+
+          zoom: 13
+
+        });
+
+
+      map.on(
+        "load",
+        function() {
+
+          startFirebaseListener();
+
+        }
+      );
+
+    }
+
+
+    /* ========================================================
+       UPDATE MAP
+       ======================================================== */
 
     function updateMap(houses) {
 
@@ -493,7 +880,9 @@
     }
 
 
-    /* FIREBASE LIVE LISTENER */
+    /* ========================================================
+       FIREBASE LIVE LISTENER
+       ======================================================== */
 
     function startFirebaseListener() {
 
@@ -555,16 +944,153 @@
     }
 
 
-    /* START */
+    /* ========================================================
+       USER LOCATION
+       ======================================================== */
 
-    map.on(
-      "load",
-      function() {
+    function showUserLocation() {
 
-        startFirebaseListener();
+      const button =
+        document.getElementById(
+          "location-button"
+        );
 
+
+      if (
+        !navigator.geolocation
+      ) {
+
+        alert(
+          "Location services are not available on this device."
+        );
+
+        return;
       }
-    );
+
+
+      button.disabled = true;
+
+      button.textContent =
+        "📍 Finding you...";
+
+
+      navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+          const lat =
+            position.coords.latitude;
+
+          const lng =
+            position.coords.longitude;
+
+
+          // Remove previous location marker.
+
+          if (userLocationMarker) {
+
+            userLocationMarker.remove();
+
+          }
+
+
+          const element =
+            document.createElement(
+              "div"
+            );
+
+          element.className =
+            "user-location-marker";
+
+
+          userLocationMarker =
+            new maplibregl.Marker({
+              element: element
+            })
+            .setLngLat([
+              lng,
+              lat
+            ])
+            .addTo(map);
+
+
+          map.flyTo({
+
+            center: [
+              lng,
+              lat
+            ],
+
+            zoom: 15,
+
+            essential: true
+
+          });
+
+
+          button.disabled = false;
+
+          button.textContent =
+            "📍 My location";
+
+        },
+
+        function(error) {
+
+          console.error(
+            "Location error:",
+            error
+          );
+
+
+          button.disabled = false;
+
+          button.textContent =
+            "📍 My location";
+
+
+          let message =
+            "We couldn't access your location.";
+
+
+          if (
+            error.code ===
+            error.PERMISSION_DENIED
+          ) {
+
+            message =
+              "Location permission was denied. You can enable it in your browser settings.";
+
+          }
+
+
+          alert(message);
+
+        },
+
+        {
+
+          enableHighAccuracy: true,
+
+          timeout: 10000,
+
+          maximumAge: 30000
+
+        }
+
+      );
+
+    }
+
+
+    document
+      .getElementById(
+        "location-button"
+      )
+      .addEventListener(
+        "click",
+        showUserLocation
+      );
 
   </script>
 
