@@ -794,125 +794,111 @@
        UPDATE MAP
        ======================================================== */
 
-    function updateMap(houses) {
+    
+function updateMap(houses) {
 
-      pumpkinMarkers.forEach(
-        marker => marker.remove()
-      );
+  pumpkinMarkers.forEach(
+    marker => marker.remove()
+  );
 
-      pumpkinMarkers = [];
+  pumpkinMarkers = [];
 
+  let activeHouses = [];
 
-      let activeHouses = [];
+  if (houses) {
 
+    Object.keys(houses).forEach(
+      function(id) {
 
-      if (houses) {
+        const house = houses[id];
 
-        Object.keys(houses).forEach(
-          function(id) {
+        if (
+          house &&
+          house.active === true &&
+          isFinite(Number(house.lat)) &&
+          isFinite(Number(house.lng))
+        ) {
 
-            const house =
-              houses[id];
-
-            if (
-              house &&
-              house.active === true &&
-              isFinite(Number(house.lat)) &&
-              isFinite(Number(house.lng))
-            ) {
-
-              activeHouses.push({
-                id: id,
-                data: house
-              });
-
-            }
-
-          }
-        );
-
-      }
-
-
-      activeHouses.forEach(
-        function(entry) {
-
-          const house = entry.data;
-          const houseId = entry.id;
-
-          const element =
-            document.createElement(
-              "div"
-            );
-
-          element.className =
-            "pumpkin-marker";
-
-          element.textContent =
-            "🎃";
-
-
-          const marker =
-            new maplibregl.Marker({
-              element: element
-            })
-            .setLngLat([
-              Number(house.lng),
-              Number(house.lat)
-            ])
-            .setPopup(
-              new maplibregl.Popup({
-                offset: 25,
-                closeButton: true
-              }).setText("Backend ID: " + houseId)
-            )
-            .addTo(map);
-
-
-          pumpkinMarkers.push(
-            marker
-          );
+          activeHouses.push({
+            id: id,
+            data: house
+          });
 
         }
-      );
 
+      }
+    );
 
-      const count =
-        activeHouses.length;
+  }
 
+  activeHouses.forEach(
+    function(entry) {
 
-      document
-        .getElementById(
-          "house-count"
+      const house = entry.data;
+
+      const latitude =
+        Number(house.lat);
+
+      const longitude =
+        Number(house.lng);
+
+      const element =
+        document.createElement("div");
+
+      element.className =
+        "pumpkin-marker";
+
+      element.textContent = "🎃";
+
+      const popupContent =
+        "Latitude: " + latitude.toFixed(6) +
+        "\nLongitude: " + longitude.toFixed(6);
+
+      const marker =
+        new maplibregl.Marker({
+          element: element
+        })
+        .setLngLat([
+          longitude,
+          latitude
+        ])
+        .setPopup(
+          new maplibregl.Popup({
+            offset: 25,
+            closeButton: true
+          }).setText(popupContent)
         )
-        .textContent =
-          "🎃 " +
-          count +
-          " " +
-          (
-            count === 1
-              ? "house"
-              : "houses"
-          ) +
-          " participating";
+        .addTo(map);
 
-
-      document
-        .getElementById(
-          "loading"
-        )
-        .style.display =
-          "none";
-
-
-      document
-        .getElementById(
-          "error"
-        )
-        .style.display =
-          "none";
+      pumpkinMarkers.push(marker);
 
     }
+  );
+
+  const count = activeHouses.length;
+
+  document
+    .getElementById("house-count")
+    .textContent =
+      "🎃 " +
+      count +
+      " " +
+      (
+        count === 1
+          ? "house"
+          : "houses"
+      ) +
+      " participating";
+
+  document
+    .getElementById("loading")
+    .style.display = "none";
+
+  document
+    .getElementById("error")
+    .style.display = "none";
+
+}
 
 
     /* ========================================================
