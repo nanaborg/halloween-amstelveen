@@ -20,6 +20,7 @@
 
     body { overflow: hidden; }
 
+    /* PASSWORD SCREEN */
     #password-screen {
       position: fixed;
       inset: 0;
@@ -66,9 +67,19 @@
       cursor: pointer;
     }
 
-    #password-error { display: none; margin-top: 10px; color: #b00020; font-size: 14px; }
+    #password-error {
+      display: none;
+      margin-top: 10px;
+      color: #b00020;
+      font-size: 14px;
+    }
 
-    #app { display: none; width: 100%; height: 100%; }
+    /* MAIN MAP */
+    #app {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
 
     #header {
       position: absolute;
@@ -102,6 +113,7 @@
     #title { font-size: 22px; font-weight: bold; margin-bottom: 5px; }
     #description { font-size: 15px; line-height: 1.4; }
     #legend { margin-top: 8px; font-size: 14px; }
+
     #map { width: 100%; height: 100vh; }
 
     #controls {
@@ -144,7 +156,7 @@
       font-size: 30px;
       line-height: 30px;
       text-align: center;
-      cursor: pointer;
+      cursor: default;
       user-select: none;
     }
 
@@ -157,7 +169,7 @@
       box-shadow: 0 1px 6px rgba(0,0,0,.45);
     }
 
-    #loading, #error {
+    #loading {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -170,14 +182,34 @@
       font-size: 15px;
     }
 
-    #error { display: none; text-align: center; }
+    #error {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      z-index: 2000;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.2);
+      font-size: 15px;
+      text-align: center;
+    }
 
     @media (max-width: 600px) {
-      #header { top: 10px; left: 10px; right: 10px; padding: 12px 48px 12px 14px; }
+      #header {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        padding: 12px 42px 12px 14px;
+      }
+
       #title { font-size: 19px; }
       #description { font-size: 14px; }
       #legend { font-size: 13px; }
       .pumpkin-marker { font-size: 27px; }
+
       #controls {
         bottom: 15px;
         left: 10px;
@@ -185,12 +217,14 @@
         justify-content: center;
         flex-wrap: wrap;
       }
+
       #house-count, #location-button { font-size: 13px; }
     }
   </style>
 </head>
 
 <body>
+  <!-- PASSWORD SCREEN -->
   <div id="password-screen">
     <div id="password-box">
       <h1>🎃 Halloween Map</h1>
@@ -201,6 +235,7 @@
     </div>
   </div>
 
+  <!-- MAIN APP -->
   <div id="app">
     <div id="header">
       <div id="title">🎃 Halloween in Amstelveen</div>
@@ -223,31 +258,17 @@
     <div id="error">Unable to load the Halloween map.</div>
   </div>
 
+  <!-- MapLibre -->
   <script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-database-compat.js"></script>
 
   <script>
+    /* PASSWORD */
     const MAP_PASSWORD = "PumpkinWalk26";
     const PASSWORD_END = new Date("2026-10-31T00:00:00+02:00");
-
-    let map = null;
-    let mapStarted = false;
-    let pumpkinMarkers = [];
-    let userLocationMarker = null;
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDaI_yzyeitjf0q8R-cDmsoc-D2A7YYkv8",
-      authDomain: "halloween-in-amstelveen.firebaseapp.com",
-      databaseURL: "https://halloween-in-amstelveen-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "halloween-in-amstelveen",
-      storageBucket: "halloween-in-amstelveen.firebasestorage.app",
-      messagingSenderId: "270982267790",
-      appId: "1:270982267790:web:32aa17b0bff91567e31adf"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
 
     function passwordIsRequired() {
       return new Date() < PASSWORD_END;
@@ -278,6 +299,26 @@
       if (event.key === "Enter") checkPassword();
     });
 
+    /* FIREBASE CONFIG — original project */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDaI_yzyeitjf0q8R-cDmsoc-D2A7YYkv8",
+      authDomain: "halloween-in-amstelveen.firebaseapp.com",
+      databaseURL: "https://halloween-in-amstelveen-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "halloween-in-amstelveen",
+      storageBucket: "halloween-in-amstelveen.firebasestorage.app",
+      messagingSenderId: "270982267790",
+      appId: "1:270982267790:web:32aa17b0bff91567e31adf"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    /* MAP */
+    let map = null;
+    let mapStarted = false;
+    let pumpkinMarkers = [];
+    let userLocationMarker = null;
+
     function initialiseMap() {
       if (mapStarted) return;
       mapStarted = true;
@@ -294,6 +335,7 @@
       });
     }
 
+    /* UPDATE MAP */
     function updateMap(houses) {
       pumpkinMarkers.forEach(marker => marker.remove());
       pumpkinMarkers = [];
@@ -310,11 +352,7 @@
             isFinite(Number(house.lat)) &&
             isFinite(Number(house.lng))
           ) {
-            activeHouses.push({
-              ...house,
-              mapLat: Number(house.lat),
-              mapLng: Number(house.lng)
-            });
+            activeHouses.push(house);
           }
         });
       }
@@ -324,24 +362,17 @@
         element.className = "pumpkin-marker";
         element.textContent = "🎃";
 
-        const latitude = house.mapLat;
-        const longitude = house.mapLng;
+        const popupText =
+          "Latitude: " + Number(house.lat).toFixed(6) +
+          "\nLongitude: " + Number(house.lng).toFixed(6);
 
         const marker = new maplibregl.Marker({ element: element })
-          .setLngLat([longitude, latitude])
+          .setLngLat([Number(house.lng), Number(house.lat)])
+          .setPopup(new maplibregl.Popup({
+            offset: 25,
+            closeButton: true
+          }).setText(popupText))
           .addTo(map);
-
-        element.addEventListener("click", function(event) {
-          event.stopPropagation();
-
-          const coordinates =
-            latitude.toFixed(6) + ", " + longitude.toFixed(6);
-
-          new maplibregl.Popup({ offset: 25 })
-            .setLngLat([longitude, latitude])
-            .setText("Coordinates (latitude, longitude): " + coordinates)
-            .addTo(map);
-        });
 
         pumpkinMarkers.push(marker);
       });
@@ -354,6 +385,7 @@
       document.getElementById("error").style.display = "none";
     }
 
+    /* FIREBASE LIVE LISTENER */
     function startFirebaseListener() {
       const housesRef = database.ref("houses");
 
@@ -362,12 +394,14 @@
         updateMap(snapshot.val());
       }, function(error) {
         console.error("Firebase error:", error);
+
         document.getElementById("loading").style.display = "none";
         document.getElementById("error").style.display = "block";
         document.getElementById("house-count").textContent = "🎃 Map temporarily unavailable";
       });
     }
 
+    /* USER LOCATION */
     function showUserLocation() {
       const button = document.getElementById("location-button");
 
@@ -422,12 +456,13 @@
 
     document.getElementById("location-button").addEventListener("click", showUserLocation);
 
+    /* CLOSE ANNOUNCEMENT */
     document.getElementById("header-close").addEventListener("click", function() {
       document.getElementById("header").style.display = "none";
       if (map) map.resize();
     });
 
-    // Open the map only after all variables have been initialized.
+    /* AUTO-OPEN — intentionally placed after all declarations */
     if (
       !passwordIsRequired() ||
       sessionStorage.getItem("halloweenMapAccess") === "yes"
