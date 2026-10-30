@@ -362,11 +362,16 @@
         element.className = "pumpkin-marker";
         element.textContent = "🎃";
 
-     const houseNumber = String(house.houseNumber || "").trim();
+   const houseNumber = String(house.houseNumber || "").trim();
 
 const popupText = houseNumber
   ? "House number: " + houseNumber
   : "House number unavailable";
+
+new maplibregl.Popup({ offset: 25 })
+  .setLngLat([house.lng, house.lat])
+  .setText(popupText)
+  .addTo(map);
 
         const marker = new maplibregl.Marker({ element: element })
           .setLngLat([Number(house.lng), Number(house.lat)])
