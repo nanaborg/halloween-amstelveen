@@ -376,14 +376,6 @@ const marker = new maplibregl.Marker({ element: element })
   }).setText(popupText))
   .addTo(map);
 
-        const marker = new maplibregl.Marker({ element: element })
-          .setLngLat([Number(house.lng), Number(house.lat)])
-          .setPopup(new maplibregl.Popup({
-            offset: 25,
-            closeButton: true
-          }).setText(popupText))
-          .addTo(map);
-
         pumpkinMarkers.push(marker);
       });
 
